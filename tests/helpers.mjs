@@ -124,12 +124,14 @@ export function randomPose(rand, kind, w = 1280, h = 720) {
   const a = (angleDeg * Math.PI) / 180;
   const cos = Math.cos(a), sin = Math.sin(a);
 
-  // Bounding box of the rotated card, so the centre keeps it fully in frame.
+  // Bounding box of the rotated card, kept inside a margin so the card (plus the
+  // corner jitter below, at most 3% of its width) is always fully in frame.
+  const margin = 0.04 * Math.min(w, h);
   const bw = Math.abs(cardW * cos) + Math.abs(cardH * sin);
   const bh = Math.abs(cardW * sin) + Math.abs(cardH * cos);
-  const scale = Math.min(1, (0.95 * w) / bw, (0.95 * h) / bh);
-  const cx = bw * scale / 2 + rand() * (w - bw * scale);
-  const cy = bh * scale / 2 + rand() * (h - bh * scale);
+  const scale = Math.min(1, (w - 2 * margin) / bw, (h - 2 * margin) / bh);
+  const cx = margin + bw * scale / 2 + rand() * (w - 2 * margin - bw * scale);
+  const cy = margin + bh * scale / 2 + rand() * (h - 2 * margin - bh * scale);
 
   const jitter = () => (rand() - 0.5) * 0.06 * cardW * scale;
   return [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => {
