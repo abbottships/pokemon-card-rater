@@ -7,10 +7,12 @@
   "scripts": {
     "start": "python3 -m http.server 8000",
     "test": "node --test \"tests/*.test.mjs\"",
-    "fixtures": "node scripts/fetch-fixtures.mjs"
+    "fixtures": "node scripts/fetch-fixtures.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "devDependencies": {
     "@techstark/opencv-js": "4.10.0-release.1",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "playwright": "^1.63.0"
   }
 }
