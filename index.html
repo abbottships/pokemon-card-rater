@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Card rater v0</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Card rater <span class="tag">v0</span></h1>
+    <p id="status">Loading OpenCV…</p>
+  </header>
+
+  <main>
+    <section class="viewer">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay"></canvas>
+    </section>
+
+    <section class="side">
+      <h2>Last captured card</h2>
+      <canvas id="crop" width="630" height="880"></canvas>
+      <dl id="metrics">
+        <dt>Detect time</dt><dd id="m-detect">–</dd>
+        <dt>Stable frames</dt><dd id="m-stable">–</dd>
+        <dt>Sharpness</dt><dd id="m-sharp">–</dd>
+        <dt>Captures</dt><dd id="m-captures">0</dd>
+      </dl>
+      <div class="controls">
+        <button id="start">Start camera</button>
+        <button id="flip" disabled>Flip camera</button>
+        <label><input type="checkbox" id="debug"> Show edges</label>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://docs.opencv.org/4.10.0/opencv.js" async></script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

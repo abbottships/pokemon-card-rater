@@ -1,0 +1,7 @@
+{
+  "_comment": "Real photos with hand-marked card corners (pixels, clockwise from the card's top-left). Photos are gitignored; only labels are committed.",
+  "charizard-in-hand.webp": {
+    "corners": [[232, 312], [884, 338], [912, 1240], [240, 1290]],
+    "notes": "Base Set 1st edition Charizard held in a hand, fingers over the left and right edges, busy background"
+  }
+}

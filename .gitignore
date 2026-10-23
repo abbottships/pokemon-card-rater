@@ -1,0 +1,7 @@
+node_modules/
+tests/output/
+# Card scans are copyrighted; fetch them locally with `npm run fixtures` instead of committing them.
+tests/fixtures/cards/*
+!tests/fixtures/cards/.gitkeep
+tests/fixtures/photos/*
+!tests/fixtures/photos/labels.json
