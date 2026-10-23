@@ -37,6 +37,8 @@ npm test
 
 To get stock card images, run `npm run fixtures` (downloads a few scans from the Pokémon TCG API's image CDN) or drop your own `.png`/`.jpg`/`.webp` scans into `tests/fixtures/cards`. Card images and photos are gitignored because they're copyrighted; only `labels.json` is committed.
 
+To check the real page end to end, run `npm run smoke -- <photo>`. It loads the page in headless Chromium with the photo as the camera, waits for a capture and saves a screenshot to `tests/output/smoke.png`. The first time, run `npx playwright install chromium`.
+
 Current results: all synthetic scenes pass with the stand-in card, cluttered backgrounds 10/10, and the Charizard-in-hand photo is found with a 3.9% corner error.
 
 ## Files
@@ -49,6 +51,8 @@ Current results: all synthetic scenes pass with the stand-in card, cluttered bac
 | `src/opencv.js` | Waits for OpenCV.js to finish loading |
 | `tests/` | Unit, synthetic scene and real photo tests (Node's built-in test runner) |
 | `scripts/fetch-fixtures.mjs` | Downloads a few stock card images for the tests |
+| `scripts/smoke.mjs` | Headless end-to-end check of the page with a photo as the camera |
+| `CLAUDE.md`, `.claude/` | Context, skills and permissions for working on the repo with Claude Code |
 
 Tick **Show edges** to see the edge map the detector is working from.
 
@@ -63,6 +67,14 @@ Tick **Show edges** to see the edge map the detector is working from.
 - On the hand-held photo the outline snaps to the inside of the yellow border on the edges where fingers overlap the card. Fine for identifying the card, not good enough for measuring centring later.
 - Busy backgrounds and holo glare will confuse the edge detector. That's the measurement to make before swapping in a small segmentation model.
 - OpenCV.js is about 10 MB and takes a few seconds to start, especially on a phone.
+
+## Working on it with Claude Code
+
+`CLAUDE.md` describes the architecture, conventions and rules (e.g. never loosen a test tolerance to get to green). The repo also has three skills in `.claude/skills/`:
+
+- `test-and-tune`: run the tests, read the failure images, tune the detector, report before and after numbers
+- `add-photo-fixture`: turn a new card photo into a labelled real-world test
+- `smoke-test`: check the page end to end in headless Chromium
 
 ## Next
 
