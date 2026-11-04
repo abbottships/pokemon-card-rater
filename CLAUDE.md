@@ -20,7 +20,7 @@ The page itself has no build step and no bundler. It's plain ES modules plus Ope
 | --- | --- |
 | `index.html`, `style.css` | The page |
 | `src/main.js` | Camera, frame loop, overlay, `onCardCaptured` hand-off to later stages |
-| `src/detect.js` | Stage 1: `detectCard` (find corners) and `warpToCrop` (630×880 crop + sharpness). Mat-based, so it runs in the browser and in Node |
+| `src/detect.js` | Stage 1: `detectCard` (find corners) and `warpToCrop` (630×880 card plus a 25 px margin, and sharpness at the card's own resolution). Mat-based, so it runs in the browser and in Node |
 | `src/gate.js` | `CaptureGate`: capture once when the card is steady and sharp |
 | `src/opencv.js` | Waits for OpenCV.js to load |
 | `tests/` | Geometry, synthetic-scene and real-photo tests, plus helpers |
@@ -28,7 +28,7 @@ The page itself has no build step and no bundler. It's plain ES modules plus Ope
 
 ## Pipeline (current and planned)
 
-1. **Find** (v0, done): classic CV, no model. Colour Canny, all contours, quad or convex-hull fit, card-ratio check.
+1. **Find** (v0, done): classic CV, no model. Colour Canny. Candidates from contours (quad or convex-hull fit) and from straight lines (Hough, collinear segments merged, parallel pairs crossed). A candidate must have the card ratio, corners near 90° and most of each side on an edge. The outermost valid one wins (the card's own printed boxes are card-shaped too), unless it contains a smaller valid shape lying the same way (then it's a photo, frame or toploader around the card). Then each side is pushed out to the outermost edge within a border's width, and the corners are re-fitted from straight sides (cards have rounded corners). The page's **Save frame** button downloads the raw camera frame, which is how a live failure becomes a test photo.
 2. **Identify** (v1): name/set via image embedding lookup, number via OCR of the bottom strip, rarity symbol classifier, price from pokemontcg.io.
 3. **Condition** (v2): centring, corners, edges.
 4. **Decide** (v3): keep, sell or grade from expected graded value vs raw price.

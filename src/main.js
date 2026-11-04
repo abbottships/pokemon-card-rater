@@ -9,6 +9,7 @@ const crop = $('crop');
 const status = $('status');
 const startBtn = $('start');
 const flipBtn = $('flip');
+const saveBtn = $('save');
 const debugBox = $('debug');
 
 const frame = document.createElement('canvas'); // full-resolution copy of the current frame
@@ -31,6 +32,20 @@ flipBtn.addEventListener('click', () => {
   startCamera();
 });
 
+// Download the current camera frame exactly as the detector sees it (no overlay), so a
+// failure seen live can become a test photo (see the add-photo-fixture skill).
+saveBtn.addEventListener('click', () => {
+  if (!frame.width) return;
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
+  frame.toBlob((blob) => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `card-frame-${stamp}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, 'image/png');
+});
+
 async function startCamera() {
   if (!navigator.mediaDevices?.getUserMedia) {
     status.textContent = 'Camera not available. The page must be served over HTTPS or localhost.';
@@ -50,6 +65,7 @@ async function startCamera() {
   await video.play();
   startBtn.textContent = 'Restart camera';
   flipBtn.disabled = false;
+  saveBtn.disabled = false;
   scheduleFrame();
 }
 

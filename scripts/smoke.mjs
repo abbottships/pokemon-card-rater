@@ -50,23 +50,29 @@ if (!useCdn) {
   await page.route((u) => u.hostname !== 'localhost' && u.pathname.endsWith('/opencv.js'), (route) => route.fulfill({ path: local, contentType: 'text/javascript' }));
 }
 
-// Replace the camera with a canvas that shows the image (or a drawn stand-in card)
-// letterboxed into a 1280x720 frame, like a webcam would.
+// Replace the camera with a canvas that shows the image (or a drawn stand-in card).
+// The image is the whole camera frame, scaled so its long side is 1280 px, as a phone
+// filming in that orientation would give. No letterbox bars: a real camera never adds
+// them, and the photo's edges against bars form a card-shaped rectangle round the card.
 await page.addInitScript((src) => {
   navigator.mediaDevices.getUserMedia = async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1280;
     canvas.height = 720;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#7a7a72';
-    ctx.fillRect(0, 0, 1280, 720);
+    let img = null;
     if (src) {
-      const img = new Image();
+      img = new Image();
       img.src = src;
       await img.decode();
-      const s = Math.min(1280 / img.width, 720 / img.height);
-      const w = img.width * s, h = img.height * s;
-      ctx.drawImage(img, (1280 - w) / 2, (720 - h) / 2, w, h);
+      const s = 1280 / Math.max(img.width, img.height);
+      canvas.width = Math.round(img.width * s);
+      canvas.height = Math.round(img.height * s);
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#7a7a72';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (img) {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     } else {
       ctx.translate(640, 360);
       ctx.rotate(0.15);
@@ -78,7 +84,7 @@ await page.addInitScript((src) => {
       for (let y = 20; y < 190; y += 14) ctx.fillRect(-125, y, 180 + ((y * 7) % 60), 5);
     }
     // Keep repainting so the stream keeps producing frames.
-    const frame = ctx.getImageData(0, 0, 1280, 720);
+    const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
     setInterval(() => ctx.putImageData(frame, 0, 0), 33);
     return canvas.captureStream(30);
   };

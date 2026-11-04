@@ -5,6 +5,7 @@ description: Add a real photo of a card as a test case, with hand-checked corner
 
 # Add a real photo as a test
 
+0. For a failure seen live on the page, ask the user for a **Save frame** download (the raw camera frame, without the overlay). Screenshots of the page have the outline and edge view drawn over them, so they can't be used as tests.
 1. Save the photo to `tests/fixtures/photos/<short-kebab-name>.<ext>` (`.jpg`, `.png` or `.webp`). Name it after the card and the situation, e.g. `charizard-in-hand.webp`.
 2. Get the image size (`node -e "require('sharp')('<path>').metadata().then(m => console.log(m.width, m.height))"`).
 3. Mark the four outer corners of the card: the physical card edge, not the inner yellow border. Use pixel coordinates, clockwise from the card's top-left as the card reads.
